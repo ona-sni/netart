@@ -1,394 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruleta Aleatoria</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-      color: #00e676;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-      align-items: flex-start;
-      max-width: 1000px;
-      width: 100%;
-    }
-
-    .roulette-box {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Flecha indicadora */
-    .arrow {
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-top: 25px solid #ff1744;
-      z-index: 10;
-    }
-
-    canvas {
-      border-radius: 50%;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-      background-color: #1e1e1e;
-    }
-
-    .btn-spin {
-      margin-top: 20px;
-      padding: 12px 30px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #000;
-      background-color: #00e676;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: transform 0.2s, background-color 0.2s;
-    }
-
-    .btn-spin:hover {
-      background-color: #00c853;
-      transform: scale(1.05);
-    }
-
-    .btn-spin:disabled {
-      background-color: #555;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .controls-box {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      flex: 1;
-      min-width: 300px;
-      max-width: 400px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .input-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
-
-    .input-group input[type="text"] {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background-color: #2a2a2a;
-      color: #fff;
-    }
-
-    .input-group input[type="color"] {
-      border: none;
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      cursor: pointer;
-      background: none;
-    }
-
-    .btn-delete {
-      background-color: #ff5252;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn-add {
-      width: 100%;
-      padding: 10px;
-      background-color: #29b6f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn-add:hover {
-      background-color: #0288d1;
-    }
-
-    #confetti-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 99;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renovación de la Mente - Red Neuronal</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>Ruleta de Decisiones</h1>
+    <!-- Contenedor principal -->
+    <div id="app-container">
+        
+        <!-- Vista exterior del cerebro (imagen vintage) -->
+        <div id="brain-view">
+            <img src="https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118610006.jpg" alt="Cerebro Vintage" id="brain-image">
+            <p class="instruccion">Toca el cerebro para entrar</p>
+        </div>
 
-  <div class="container">
-    <div class="roulette-box">
-      <div class="arrow"></div>
-      <canvas id="wheel" width="380" height="380"></canvas>
-      <button id="spin-btn" class="btn-spin">¡GIRAR!</button>
+        <!-- Vista interior: Red Neuronal con impulsos eléctricos -->
+        <div id="neurons-view" class="oculto">
+            <svg id="red-neuronal" width="100%" height="100%">
+                <defs>
+                    <filter id="brillo-celular" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- Modal para mostrar los versículos -->
+        <div id="verse-modal" class="oculto">
+            <div class="modal-content">
+                <h2 id="verse-title">Referencia</h2>
+                <p id="verse-text">Texto del versículo...</p>
+                <button id="btn-continuar">Continuar</button>
+            </div>
+        </div>
+
+        <!-- Modal Final: Mente Renovada -->
+        <div id="final-modal" class="oculto">
+            <div class="modal-content final-content">
+                <h2>¡Mente Renovada!</h2>
+                <img src="https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118609981.jpg" alt="Mente Renovada por la Palabra" id="final-image">
+                <p>Tu mente ha sido transformada y renovada por el poder de la Palabra de Dios.</p>
+                <button onclick="location.reload()">Volver a empezar</button>
+            </div>
+        </div>
+
+        <!-- Canvas para el confeti -->
+        <canvas id="confetti-canvas"></canvas>
+
     </div>
 
-    <div class="controls-box">
-      <h2 style="margin-bottom: 15px; font-size: 1.2rem;">Opciones</h2>
-      <div id="inputs-container"></div>
-      <button id="add-btn" class="btn-add">+ Agregar Opción</button>
-    </div>
-  </div>
-
-  <canvas id="confetti-canvas"></canvas>
-
-  <script>
-    // --- ESTADO Y CONFIGURACIÓN INICIAL ---
-    const canvas = document.getElementById('wheel');
-    const ctx = canvas.getContext('2d');
-    const spinBtn = document.getElementById('spin-btn');
-    const addBtn = document.getElementById('add-btn');
-    const inputsContainer = document.getElementById('inputs-container');
-
-    let items = [
-      { text: 'Opción 1', color: '#ff4081' },
-      { text: 'Opción 2', color: '#7c4dff' },
-      { text: 'Opción 3', color: '#536def' },
-      { text: 'Opción 4', color: '#40c4ff' },
-      { text: 'Opción 5', color: '#64ffda' }
-    ];
-
-    let currentAngle = 0;
-    let isSpinning = false;
-
-    // --- FUNCIONES DE LA RULETA ---
-    function drawWheel() {
-      const numOptions = items.length;
-      const arcSize = (2 * Math.PI) / numOptions;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = canvas.width / 2 - 10;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (numOptions === 0) return;
-
-      items.forEach((item, index) => {
-        const angle = currentAngle + index * arcSize;
-
-        // Dibujar Sector
-        ctx.beginPath();
-        ctx.fillStyle = item.color;
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
-        ctx.lineTo(centerX, centerY);
-        ctx.fill();
-        ctx.stroke();
-
-        // Dibujar Texto
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(angle + arcSize / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 16px sans-serif";
-        ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.shadowBlur = 4;
-        ctx.fillText(item.text, radius - 20, 5);
-        ctx.restore();
-      });
-    }
-
-    function spin() {
-      if (isSpinning || items.length === 0) return;
-
-      isSpinning = true;
-      spinBtn.disabled = true;
-
-      const spinAngle = Math.random() * 10 + 20; // Vueltas totales aleatorias
-      const spinDuration = 5000; // 5 segundos
-      const start = performance.now();
-      const startAngle = currentAngle;
-
-      function animate(time) {
-        const elapsed = time - start;
-        const progress = Math.min(elapsed / spinDuration, 1);
-        
-        // Función de desaceleración (Ease-Out Cubic)
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        
-        currentAngle = startAngle + easeOut * spinAngle;
-        drawWheel();
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          isSpinning = false;
-          spinBtn.disabled = false;
-          getWinner();
-          triggerConfetti();
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    function getWinner() {
-      const numOptions = items.length;
-      const arcSize = (2 * Math.PI) / numOptions;
-      
-      // Ajustar el ángulo respecto al puntero superior (3PI/2 o -90 grados)
-      let normalizedAngle = (2 * Math.PI - (currentAngle % (2 * Math.PI))) + (3 * Math.PI / 2);
-      let winningIndex = Math.floor((normalizedAngle % (2 * Math.PI)) / arcSize);
-      
-      const winner = items[winningIndex];
-      setTimeout(() => {
-        alert(`¡El ganador es: ${winner.text}!`);
-      }, 100);
-    }
-
-    // --- GESTIÓN DE LA INTERFAZ ---
-    function renderInputs() {
-      inputsContainer.innerHTML = '';
-      items.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'input-group';
-        div.innerHTML = `
-          <input type="text" value="${item.text}" data-index="${index}" class="text-input">
-          <input type="color" value="${item.color}" data-index="${index}" class="color-input">
-          <button class="btn-delete" onclick="removeItem(${index})">✕</button>
-        `;
-        inputsContainer.appendChild(div);
-      });
-
-      // Listeners de actualización
-      document.querySelectorAll('.text-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-          items[e.target.dataset.index].text = e.target.value;
-          drawWheel();
-        });
-      });
-
-      document.querySelectorAll('.color-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-          items[e.target.dataset.index].color = e.target.value;
-          drawWheel();
-        });
-      });
-    }
-
-    function addItem() {
-      const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-      items.push({ text: `Opción ${items.length + 1}`, color: randomColor });
-      renderInputs();
-      drawWheel();
-    }
-
-    window.removeItem = function(index) {
-      if (items.length <= 1) return;
-      items.splice(index, 1);
-      renderInputs();
-      drawWheel();
-    }
-
-    // --- ANIMACIÓN DE CONFETI ---
-    const confettiCanvas = document.getElementById('confetti-canvas');
-    const confettiCtx = confettiCanvas.getContext('2d');
-    let particles = [];
-
-    function resizeConfettiCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeConfettiCanvas);
-    resizeConfettiCanvas();
-
-    function triggerConfetti() {
-      particles = [];
-      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-      
-      for (let i = 0; i < 120; i++) {
-        particles.push({
-          x: confettiCanvas.width / 2,
-          y: confettiCanvas.height / 2,
-          vx: (Math.random() - 0.5) * 12,
-          vy: (Math.random() - 0.5) * 12 - 4,
-          size: Math.random() * 8 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          gravity: 0.15,
-          opacity: 1
-        });
-      }
-      animateConfetti();
-    }
-
-    function animateConfetti() {
-      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      
-      particles.forEach((p, index) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += p.gravity;
-        p.opacity -= 0.008;
-
-        confettiCtx.beginPath();
-        confettiCtx.fillStyle = p.color;
-        confettiCtx.globalAlpha = Math.max(p.opacity, 0);
-        confettiCtx.fillRect(p.x, p.y, p.size, p.size);
-      });
-
-      particles = particles.filter(p => p.opacity > 0);
-
-      if (particles.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      } else {
-        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      }
-    }
-
-    // --- EVENTOS INICIALES ---
-    spinBtn.addEventListener('click', spin);
-    addBtn.addEventListener('click', addItem);
-
-    renderInputs();
-    drawWheel();
-  </script>
+    <script src="app.js"></script>
 </body>
 </html>
