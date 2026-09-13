@@ -1,14 +1,16 @@
 const versiculos = [
-    { ref: "Romanos 12:2", texto: "No os conforméis a este siglo, sino transformaos por medio de la renovación de vuestro entendimiento, para que comprobéis cuál sea la buena voluntad de Dios, agradable y perfecta." },
-    { ref: "2 Corintios 10:4", texto: "Porque las armas de nuestra milicia no son carnales, sino poderosas en Dios para la destrucción de fortalezas." },
-    { ref: "2 Timoteo 1:7", texto: "Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio." },
-    { ref: "Efesios 4:23", texto: "Y renovaos en el espíritu de vuestra mente." },
+    { ref: "Romanos 12:2", texto: "No imiten las conductas ni las costumbres de este mundo, más bien dejen que Dios los transforme en personas nuevas al cambiarles la manera de pensar. Entonces aprenderán a conocer la voluntad de Dios para ustedes, la cual es buena, agradable y perfecta" },
+    { ref: "2 Corintios 10:4", texto: "Usamos las armas poderosas de Dios, no las del mundo, para derribar las fortalezas del razonamiento humano y para destruir argumentos falsos" },
+    { ref: "2 Timoteo 1:7", texto: "Pues Dios no nos ha dado un espíritu de temor y timidez sino de poder, amor y autodisciplina" },
+    { ref: "Efesios 4:23", texto: "En cambio, dejen que el Espíritu les renueve los pensamientos y las actitudes" },
     { ref: "Santiago 4:7", texto: "Someteos, pues, a Dios; resistid al diablo, y huirá de vosotros." },
     { ref: "Lucas 10:19", texto: "He aquí os doy potestad de hollar serpientes y escorpiones, y sobre toda fuerza del enemigo, y nada os dañará." },
-    { ref: "Efesios 6:11", texto: "Vestíos de toda la armadura de Dios, para que podáis estar firmes contra las asechanzas del diablo." },
-    { ref: "Lamentaciones 3:25", texto: "Bueno es Jehová a los que en él esperan, al alma que le busca." },
-    { ref: "1 Juan 4:4", texto: "Hijitos, vosotros sois de Dios, y los habéis vencido; porque mayor es el que está en vosotros, que el que está en el mundo." },
-    { ref: "2 Tesalonicenses 3:3", texto: "Pero fiel es el Señor, que os afirmará y guardará del mal." }
+    { ref: "Efesios 6:11", texto: "Pónganse toda la armadura de Dios para poder mantenerse firmes contra todas las estrategias del diablo." },
+    { ref: "Lamentaciones 3:25", texto: "Bueno es el Señor para los que en Él esperan, Para el alma que lo busca" },
+    { ref: "1 Juan 4:4", texto: "Ustedes, queridos hijos, son de Dios y han vencido a esos falsos profetas, porque el que está en ustedes es más poderoso que el que está en el mundo" },
+    { ref: "2 Tesalonicenses 3:3", texto: "Pero el Señor es fiel, y él los fortalecerá y los protegerá del maligno" } 
+    { ref: "1 pedro 5:6-7", texto: "
+    { ref: "romanos 10:17", texto: "Así que la fe viene como resultado de oír el mensaje y el mensaje que se oye es la palabra de Cristo."}
 ];
 
 let pasoActual = 0;
