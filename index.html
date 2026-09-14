@@ -3,22 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metanoia - Red Neuronal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Metanoia- Red Neuronal</title>
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #02050a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- VISTA DEL CEREBRO VINTAGE --- */
+        #brain-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 1.5s ease-in, opacity 1s ease-in;
+            z-index: 10;
+        }
+
+        #brain-image {
+            width: 380px;
+            border-radius: 12px;
+            filter: drop-shadow(0 0 30px rgba(0, 150, 255, 0.3)) sepia(0.4) hue-rotate(170deg) brightness(1.1);
+            transition: filter 0.3s, transform 0.3s;
+        }
+
+        #brain-image:hover {
+            filter: drop-shadow(0 0 50px rgba(0, 200, 255, 0.6)) sepia(0.2) hue-rotate(170deg) brightness(1.3);
+            transform: scale(1.03);
+        }
+
+        .instruccion {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #8ab4f8;
+            animation: palpitar 2s infinite;
+        }
+
+        .zoom-in {
+            transform: scale(25);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- VISTA DE NEURONAS --- */
+        #neurons-view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 2s ease-out; z-index: 5;
+            background: radial-gradient(circle at center, #051326 0%, #010408 100%);
+        }
+
+        #instrucciones-red {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            color: #00d2ff;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            z-index: 10;
+            pointer-events: none;
+            animation: palpitar 2s infinite;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .oculto { display: none !important; }
+        .visible-lento { opacity: 1 !important; pointer-events: auto !important; }
+
+        /* Estilos biológicos */
+        .soma-neurona { fill: #00d2ff; filter: url(#brillo-celular); }
+        .dendrita { stroke: #0088bb; stroke-width: 1.2; fill: none; opacity: 0.5; }
+        .axon { stroke: #0a1f35; stroke-width: 3; fill: none; transition: stroke 0.5s, stroke-width 0.5s; cursor: pointer; }
+        .axon.activa { stroke: #005588; stroke-width: 4; }
+        .axon.activa:hover { stroke: #00d2ff; }
+        .axon.desbloqueada { stroke: #00ff88; stroke-width: 4; filter: url(#brillo-celular); }
+        .impulso-electrico { fill: #ffffff; filter: drop-shadow(0 0 8px #00d2ff); }
+
+        /* --- ESTACIONES (IMÁGENES) --- */
+        .estacion-img {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #00d2ff;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+            z-index: 10;
+        }
+
+        .estacion-img.bloqueada {
+            filter: grayscale(100%) brightness(0.4);
+            border-color: #333;
+            cursor: not-allowed;
+        }
+
+        .estacion-img.activa-esperando {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px #00ff88;
+            cursor: pointer;
+            animation: pulsar-verde 1.5s infinite;
+        }
+
+        .estacion-img:not(.bloqueada):not(.activa-esperando) {
+            border-color: #00d2ff;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+            cursor: crosshair;
+        }
+
+        .estacion-img:not(.bloqueada):hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            box-shadow: 0 0 25px #00d2ff;
+            z-index: 15;
+        }
+
+        /* --- TOOLTIP INTELIGENTE --- */
+        #tooltip {
+            position: fixed; /* Fixed para calcular respecto a la ventana */
+            background: linear-gradient(135deg, #071b26, #102a3a);
+            border: 1px solid #00ff88;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            width: 260px;
+            pointer-events: none; /* Se desactiva por defecto */
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 30;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        #tooltip.visible {
+            opacity: 1;
+            pointer-events: auto; /* Permite hacer clic en los enlaces */
+        }
+
+        #tooltip a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            margin-bottom: 8px;
+            transition: transform 0.2s;
+        }
+
+        #tooltip a:hover {
+            transform: scale(1.05);
+        }
+
+        #tooltip strong {
+            color: #00ff88;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #tooltip a:hover strong {
+            color: #ffffff;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        /* --- MODAL FINAL --- */
+        #final-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 5, 10, 0.9);
+            display: flex; justify-content: center; align-items: center; z-index: 40;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2a1b0a, #4a3620);
+            padding: 30px; border-radius: 15px; text-align: center; max-width: 500px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .modal-content h2 { color: #ffd700; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .modal-content p { font-size: 1.1rem; line-height: 1.5; color: #fff; }
+
+        .scratch-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        #final-image-color {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        button {
+            margin-top: 20px; padding: 12px 25px; background: #d4af37; color: #000;
+            border: none; border-radius: 5px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        button:hover { background: #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.05); }
+
+        #confetti-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999;
+        }
+
+        @keyframes palpitar { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes pulsar-verde { 0%, 100% { box-shadow: 0 0 10px #00ff88; } 50% { box-shadow: 0 0 25px #00ff88; transform: translate(-50%, -50%) scale(1.1); } }
+    </style>
 </head>
 <body>
 
-    <!-- Contenedor principal -->
     <div id="app-container">
         
-        <!-- Vista exterior del cerebro (imagen vintage) -->
         <div id="brain-view">
+            <!-- Imagen local B/N -->
             <img src="https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118610006.jpg" alt="Cerebro Vintage" id="brain-image">
-            <p class="instruccion">Toca el cerebro </p>
+            <p class="instruccion">Toca el cerebro para entrar</p>
         </div>
 
-        <!-- Vista interior: Red Neuronal con impulsos eléctricos -->
         <div id="neurons-view" class="oculto">
+            <div id="instrucciones-red">Haz clic en la imagen brillante para desbloquearla. Pasa el cursor para leer.</div>
+            
             <svg id="red-neuronal" width="100%" height="100%">
                 <defs>
                     <filter id="brillo-celular" x="-50%" y="-50%" width="200%" height="200%">
@@ -32,30 +273,377 @@
             </svg>
         </div>
 
-        <!-- Modal para mostrar los versículos -->
-        <div id="verse-modal" class="oculto">
-            <div class="modal-content">
-                <h2 id="verse-title">Referencia</h2>
-                <p id="verse-text">Texto del versículo...</p>
-                <button id="btn-continuar">Continuar</button>
-            </div>
-        </div>
+        <div id="tooltip"></div>
 
-        <!-- Modal Final: Mente Renovada -->
         <div id="final-modal" class="oculto">
-            <div class="modal-content final-content">
+            <div class="modal-content">
                 <h2>¡Mente Renovada!</h2>
-                <img src="https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118609981.jpg" alt="Mente Renovada por la Palabra" id="final-image">
+                <p style="margin-bottom: 5px; color: #00ff88; font-size: 0.95rem; animation: palpitar 2s infinite;">
+                    Usa tu dedo o ratón para colorear el cerebro
+                </p>
+                
+                <div class="scratch-container" id="scratch-container">
+                    <!-- Imagen local A COLOR -->
+                    <img src="https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118609981.jpg" id="final-image-color">
+                    <canvas id="scratch-canvas"></canvas>
+                </div>
+
                 <p>Tu mente ha sido transformada y renovada por el poder de la Palabra de Dios.</p>
                 <button onclick="location.reload()">Volver a empezar</button>
             </div>
         </div>
 
-        <!-- Canvas para el confeti -->
         <canvas id="confetti-canvas"></canvas>
-
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        const versiculos = [
+            { ref: "Romanos 12:2", texto: "No os conforméis a este siglo, sino transformaos por medio de la renovación de vuestro entendimiento...", imagen: "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=150&q=80" },
+            { ref: "2 Corintios 10:4", texto: "Porque las armas de nuestra milicia no son carnales, sino poderosas en Dios para la destrucción de fortalezas.", imagen: "https://images.unsplash.com/photo-1599839619722-39751411ea63?w=150&q=80" },
+            { ref: "2 Timoteo 1:7", texto: "Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio.", imagen: "https://images.unsplash.com/photo-1517260739337-6799d239ce83?w=150&q=80" },
+            { ref: "Efesios 4:23", texto: "Y renovaos en el espíritu de vuestra mente.", imagen: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=150&q=80" },
+            { ref: "Santiago 4:7", texto: "Someteos, pues, a Dios; resistid al diablo, y huirá de vosotros.", imagen: "https://images.unsplash.com/photo-1614030424754-24d0eebd46b2?w=150&q=80" },
+            { ref: "Lucas 10:19", texto: "He aquí os doy potestad de hollar serpientes y escorpiones, y sobre toda fuerza del enemigo...", imagen: "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=150&q=80" },
+            { ref: "Efesios 6:11", texto: "Vestíos de toda la armadura de Dios, para que podáis estar firmes contra las asechanzas del diablo.", imagen: "https://i.etsystatic.com/15249304/r/il/37519e/7121673692/il_570xN.7121673692_osla.jpg" },
+            { ref: "Lamentaciones 3:25", texto: "Bueno es Jehová a los que en él esperan, al alma que le busca.", imagen: "https://www.jesuits.africa/wp-content/uploads/2020/08/st-ignatius-loyola-praying.jpg" },
+            { ref: "1 Juan 4:4", texto: "Hijitos, vosotros sois de Dios, y los habéis vencido; porque mayor es el que está en vosotros...", imagen: "https://ucarecdn.com/d0370163-9100-4632-bae5-8d876fbe4460/-/format/auto/-/preview/3000x3000/-/quality/lighter/" },
+            { ref: "2 Tesalonicenses 3:3", texto: "Pero fiel es el Señor, que os afirmará y guardará del mal.", imagen: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=150&q=80" }
+        ];
+
+        let pasoActual = 0;
+        const totalPasos = versiculos.length;
+        let impulsosElectricos = []; 
+        let tooltipTimeout; // Variable para gestionar la persistencia del tooltip
+
+        const brainView = document.getElementById('brain-view');
+        const neuronsView = document.getElementById('neurons-view');
+        const svgRed = document.getElementById('red-neuronal');
+        const tooltip = document.getElementById('tooltip');
+
+        // Lógica de Tooltip
+        tooltip.addEventListener('mouseenter', () => clearTimeout(tooltipTimeout));
+        tooltip.addEventListener('mouseleave', () => {
+            tooltipTimeout = setTimeout(() => tooltip.classList.remove('visible'), 300);
+        });
+
+        brainView.addEventListener('click', () => {
+            brainView.classList.add('zoom-in');
+            setTimeout(() => {
+                brainView.classList.add('oculto');
+                neuronsView.classList.remove('oculto');
+                setTimeout(() => {
+                    neuronsView.classList.add('visible-lento');
+                    dibujarRedNeuronalOrganica();
+                    iniciarTransmisionElectrica(); 
+                }, 100);
+            }, 1500); 
+        });
+
+        function dibujarRedNeuronalOrganica() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            // Ajustamos posiciones al azar controladas
+            const nodos = [
+                { x: 15, y: 50 }, { x: 30, y: 25 }, { x: 50, y: 15 }, 
+                { x: 70, y: 30 }, { x: 85, y: 55 }, { x: 75, y: 80 }, 
+                { x: 55, y: 85 }, { x: 35, y: 70 }, { x: 20, y: 80 }, 
+                { x: 45, y: 45 }, { x: 65, y: 55 }
+            ];
+
+            dibujarRuidoDeFondo(width, height);
+
+            for (let i = 0; i < totalPasos; i++) {
+                let x1 = (nodos[i].x / 100) * width;
+                let y1 = (nodos[i].y / 100) * height;
+                let x2 = (nodos[i+1].x / 100) * width;
+                let y2 = (nodos[i+1].y / 100) * height;
+
+                crearConexionCurva(x1, y1, x2, y2, i);
+                crearNeuronaRealista(x1, y1);
+                crearImagenEstacion(x1, y1, i);
+            }
+            crearNeuronaRealista((nodos[totalPasos].x / 100) * width, (nodos[totalPasos].y / 100) * height);
+        }
+
+        // Posicionamiento Inteligente del Tooltip
+        function mostrarTooltipDinamico(img, indice) {
+            if (img.classList.contains('bloqueada') && !img.classList.contains('activa-esperando')) return;
+            
+            clearTimeout(tooltipTimeout);
+
+            // Generar Link a BibleGateway (Se añade RVR1960 como versión popular en español)
+            const referenciaCodificada = encodeURIComponent(versiculos[indice].ref);
+            const bibleGatewayUrl = `https://www.biblegateway.com/passage/?search=${referenciaCodificada}&version=RVR1960`;
+
+            tooltip.innerHTML = `
+                <a href="${bibleGatewayUrl}" target="_blank" title="Leer en BibleGateway">
+                    <strong>${versiculos[indice].ref} 🔗</strong>
+                </a>
+                ${versiculos[indice].texto}
+            `;
+            
+            // Lo hacemos invisible brevemente para tomar medidas
+            tooltip.style.visibility = 'hidden';
+            tooltip.classList.add('visible');
+            
+            const rectImg = img.getBoundingClientRect();
+            const rectTooltip = tooltip.getBoundingClientRect();
+            
+            let top, left;
+
+            // Lógica Vertical: Si choca arriba, ponlo abajo.
+            if (rectImg.top - rectTooltip.height - 20 < 0) {
+                top = rectImg.bottom + 15;
+            } else {
+                top = rectImg.top - rectTooltip.height - 15;
+            }
+
+            // Lógica Horizontal: Centrarlo, pero evitar que salga por los lados
+            left = rectImg.left + (rectImg.width / 2) - (rectTooltip.width / 2);
+            
+            if (left < 10) left = 10;
+            if (left + rectTooltip.width > window.innerWidth - 10) {
+                left = window.innerWidth - rectTooltip.width - 10;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+            tooltip.style.visibility = 'visible';
+        }
+
+        function crearImagenEstacion(x, y, indice) {
+            let img = document.createElement('img');
+            img.src = versiculos[indice].imagen;
+            img.className = 'estacion-img bloqueada';
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
+            img.id = `estacion-img-${indice}`;
+            
+            if (indice === 0) img.classList.add('activa-esperando');
+
+            img.addEventListener('mouseenter', () => mostrarTooltipDinamico(img, indice));
+            
+            img.addEventListener('mouseleave', () => {
+                // Al salir, damos 300ms de gracia por si el ratón va hacia el tooltip (para clickear el link)
+                tooltipTimeout = setTimeout(() => {
+                    tooltip.classList.remove('visible');
+                }, 300);
+            });
+
+            img.addEventListener('click', () => manejarClicAvanzar(indice));
+            
+            neuronsView.appendChild(img);
+        }
+
+        function crearConexionCurva(x1, y1, x2, y2, indice) {
+            let cx = (x1 + x2) / 2 + (Math.random() * 100 - 50);
+            let cy = (y1 + y2) / 2 + (Math.random() * 100 - 50);
+
+            let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            let dPath = `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
+            
+            path.setAttribute("d", dPath);
+            path.setAttribute("class", "axon");
+            path.setAttribute("id", `conexion-${indice}`);
+            
+            if (indice === 0) path.classList.add("activa");
+            path.addEventListener('click', () => manejarClicAvanzar(indice));
+            
+            svgRed.appendChild(path);
+            crearVoltioElectrico(path);
+        }
+
+        function manejarClicAvanzar(indice) {
+            if (indice === pasoActual) {
+                const pathActual = document.getElementById(`conexion-${indice}`);
+                const imgActual = document.getElementById(`estacion-img-${indice}`);
+                
+                pathActual.classList.remove('activa');
+                pathActual.classList.add('desbloqueada');
+                
+                imgActual.classList.remove('bloqueada');
+                imgActual.classList.remove('activa-esperando');
+                
+                // Mostrar tooltip automáticamente como feedback y esconder tras 3 segundos
+                mostrarTooltipDinamico(imgActual, indice);
+                tooltipTimeout = setTimeout(() => tooltip.classList.remove('visible'), 3500);
+                
+                pasoActual++;
+                
+                if (pasoActual < totalPasos) {
+                    const siguientePath = document.getElementById(`conexion-${pasoActual}`);
+                    const siguienteImg = document.getElementById(`estacion-img-${pasoActual}`);
+                    siguientePath.classList.add('activa');
+                    siguienteImg.classList.add('activa-esperando');
+                } else {
+                    setTimeout(() => mostrarFinal(), 1500);
+                }
+            }
+        }
+
+        function crearVoltioElectrico(pathElement) {
+            let circuloVoltio = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circuloVoltio.setAttribute("r", 3.5);
+            circuloVoltio.setAttribute("class", "impulso-electrico");
+            svgRed.appendChild(circuloVoltio);
+
+            impulsosElectricos.push({
+                elemento: circuloVoltio, path: pathElement,
+                progreso: Math.random(), velocidade: 0.003 + Math.random() * 0.004
+            });
+        }
+
+        function crearNeuronaRealista(x, y) {
+            for(let i = 0; i < 5; i++) {
+                let rx = x + (Math.random() * 45 - 22);
+                let ry = y + (Math.random() * 45 - 22);
+                let dendrita = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                dendrita.setAttribute("x1", x); dendrita.setAttribute("y1", y);
+                dendrita.setAttribute("x2", rx); dendrita.setAttribute("y2", ry);
+                dendrita.setAttribute("class", "dendrita");
+                svgRed.appendChild(dendrita);
+            }
+            let soma = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            soma.setAttribute("cx", x); soma.setAttribute("cy", y);
+            soma.setAttribute("r", 5); soma.setAttribute("class", "soma-neurona");
+            svgRed.appendChild(soma);
+        }
+
+        function dibujarRuidoDeFondo(width, height) {
+            for(let i=0; i < 15; i++) {
+                let x1 = Math.random() * width; let y1 = Math.random() * height;
+                let x2 = x1 + (Math.random() * 180 - 90); let y2 = y1 + (Math.random() * 180 - 90);
+                let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                let cx = (x1 + x2) / 2 + 20; let cy = (y1 + y2) / 2 - 20;
+                path.setAttribute("d", `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`);
+                path.setAttribute("stroke", "rgba(10, 30, 50, 0.4)"); 
+                path.setAttribute("stroke-width", "1"); path.setAttribute("fill", "none");
+                svgRed.appendChild(path);
+                crearVoltioElectrico(path);
+                crearNeuronaRealista(x1, y1);
+            }
+        }
+
+        function iniciarTransmisionElectrica() {
+            function animarFlujo() {
+                requestAnimationFrame(animarFlujo);
+                impulsosElectricos.forEach(item => {
+                    item.progreso += item.velocidade;
+                    if (item.progreso > 1) item.progreso = 0;
+                    let punto = item.path.getPointAtLength(item.progreso * item.path.getTotalLength());
+                    item.elemento.setAttribute("cx", punto.x);
+                    item.elemento.setAttribute("cy", punto.y);
+                });
+            }
+            animarFlujo();
+        }
+
+        /* --- LÓGICA FINAL Y CANVAS DE COLOREAR --- */
+        function mostrarFinal() {
+            const finalModal = document.getElementById('final-modal');
+            finalModal.classList.remove('oculto');
+            lanzarConfeti();
+            iniciarCanvasColoreable();
+        }
+
+        function iniciarCanvasColoreable() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            const container = document.getElementById('scratch-container');
+            
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+
+            const imgBW = new Image();
+            imgBW.crossOrigin = "Anonymous";
+            imgBW.src = "https://thumbs.dreamstime.com/b/illustra-lateral-del-grabado-vintage-dibujo-de-la-mano-opini%C3%B3n-cerebro-humano-118610006.jpg";
+            
+            imgBW.onload = () => {
+                ctx.drawImage(imgBW, 0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'destination-out';
+            };
+
+            imgBW.onerror = () => {
+                ctx.fillStyle = "#8a8a8a"; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'destination-out';
+            };
+
+            let isDrawing = false;
+
+            function obtenerCoordenadas(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+                return { x, y };
+            }
+
+            function scratch(x, y) {
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, Math.PI * 2); 
+                ctx.fill();
+            }
+
+            const startDrawing = (e) => { 
+                isDrawing = true; 
+                const coords = obtenerCoordenadas(e); 
+                scratch(coords.x, coords.y); 
+            };
+            const draw = (e) => { 
+                if (!isDrawing) return; 
+                e.preventDefault(); 
+                const coords = obtenerCoordenadas(e); 
+                scratch(coords.x, coords.y); 
+            };
+            const stopDrawing = () => { isDrawing = false; };
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            canvas.addEventListener('touchstart', startDrawing);
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function lanzarConfeti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            const colors = ['#ffd700', '#00ff88', '#00d2ff', '#ffffff'];
+
+            for(let i = 0; i < 200; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 3,
+                    dx: Math.random() * 4 - 2,
+                    dy: Math.random() * 5 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+
+            function animarConfeti() {
+                requestAnimationFrame(animarConfeti);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.y += p.dy; p.x += p.dx;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color; ctx.fill();
+
+                    if (p.y > canvas.height) {
+                        p.y = -10; p.x = Math.random() * canvas.width;
+                    }
+                });
+            }
+            animarConfeti();
+        }
+    </script>
 </body>
 </html>
